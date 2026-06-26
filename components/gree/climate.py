@@ -35,19 +35,15 @@ ALLOWED_CLIMATE_PRESETS = {
 }
 validate_presets = cv.enum(ALLOWED_CLIMATE_PRESETS, upper=True)
 
-CONFIG_SCHEMA = cv.All(
-    climate.CLIMATE_SCHEMA.extend(
+CONFIG_SCHEMA = (
+    climate.climate_schema(GreeClimate)
+    .extend(
         {
             cv.GenerateID(): cv.declare_id(GreeClimate),
-            cv.Optional(CONF_SUPPORTED_PRESETS): cv.ensure_list(validate_presets),
-            # cv.Optional(CONF_SUPPORTED_SWING_MODES): cv.ensure_list(
-                # validate_swing_modes
-            # ),
         }
     )
-    # wifi module polls every 300ms but do we need it so often? set it to 10s
-    .extend(cv.polling_component_schema("10s"))
-    .extend(uart.UART_DEVICE_SCHEMA),
+    .extend(uart.UART_DEVICE_SCHEMA)
+    .extend(cv.COMPONENT_SCHEMA)
 )
 
 async def to_code(config):
